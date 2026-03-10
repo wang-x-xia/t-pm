@@ -1,0 +1,5 @@
+名称: 检查需求数据
+参数: []
+定义:
+  文件: src/requirement.py
+  函数: check_requirement_data

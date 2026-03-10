@@ -1,0 +1,5 @@
+# 忽略所有的 __pycache__ 目录
+__pycache__/
+
+# 因为用了符号链接，去掉.trae/skills
+.trae/skills

@@ -1,0 +1,5 @@
+名称: 检查模块文件
+参数: []
+定义:
+  文件: src/module.py
+  函数: check_module_files

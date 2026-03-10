@@ -1,0 +1,5 @@
+名称: 检查概念数据
+参数: []
+定义:
+  文件: src/concept.py
+  函数: check_concept_data
