@@ -20,12 +20,6 @@ def check_module_data():
                         data = yaml.safe_load(f)
                     
                     # 检查必要字段
-                    if '模块' not in data:
-                        failure.append(f"{file_path} - 缺少必要字段: 模块")
-                        failure.append("  修复建议: 添加 '模块' 字段，例如: 模块: 模块名称")
-                        valid = False
-                    
-                    # 检查模块文件的特定字段
                     if file == "模块.yaml":
                         if '名称' not in data:
                             failure.append(f"{file_path} - 缺少必要字段: 名称")
@@ -248,4 +242,99 @@ def check_module_dependencies():
                     valid = False
     
     return valid, success, failure
+
+def check_method_files():
+    """检查所有模块中定义的方法是否都有对应的方法文件"""
+    module_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块"
+    project_root = "c:/Users/fly_d/IdeaProjects/t-pm"
+    valid = True
+    success = []
+    failure = []
+    
+    # 遍历所有模块目录
+    for root, _, files in os.walk(module_dir):
+        for file in files:
+            if file == '模块.yaml':
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = yaml.safe_load(f)
+                    
+                    # 检查是否有代码路径
+                    if '代码' in data:
+                        code_path = data['代码']
+                        full_code_path = os.path.join(project_root, code_path)
+                        module_name = data.get('名称', '未知模块')
+                        
+                        # 方法文件应该存储在当前模块目录的方法子目录中
+                        method_dir = os.path.join(os.path.dirname(file_path), '方法')
+                        
+                        # 检查Python文件是否存在
+                        if os.path.exists(full_code_path):
+                            # 提取Python文件中的所有函数
+                            functions = extract_functions(full_code_path)
+                            
+                            if functions:
+                                # 读取方法目录中的所有YAML文件，提取定义的函数名
+                                defined_functions = []
+                                if os.path.exists(method_dir):
+                                    for method_file in os.listdir(method_dir):
+                                        if method_file.endswith('.yaml'):
+                                            method_file_path = os.path.join(method_dir, method_file)
+                                            try:
+                                                with open(method_file_path, 'r', encoding='utf-8') as mf:
+                                                    method_data = yaml.safe_load(mf)
+                                                if '定义' in method_data and '函数' in method_data['定义']:
+                                                    defined_functions.append(method_data['定义']['函数'])
+                                            except Exception as e:
+                                                failure.append(f"读取方法文件失败: {method_file_path} - {e}")
+                                                valid = False
+                                
+                                # 检查每个Python函数是否有对应的方法文件
+                                for func_name in functions:
+                                    if func_name not in defined_functions:
+                                        failure.append(f"{file_path} - Python方法缺少对应的方法文件: {func_name}")
+                                        failure.append(f"  修复建议: 在 {method_dir} 目录中创建方法文件，并在其中设置 '定义: {{函数: {func_name}}}'")
+                                        valid = False
+                                    else:
+                                        success.append(f"{file_path} - Python方法对应的方法文件存在: {func_name}")
+                            else:
+                                success.append(f"{file_path} - Python文件中无方法定义，跳过方法文件检查")
+                        else:
+                            failure.append(f"{file_path} - Python文件不存在: {code_path}")
+                            failure.append(f"  修复建议: 创建Python文件 {full_code_path}")
+                            valid = False
+                    else:
+                        success.append(f"{file_path} - 无代码路径定义，跳过方法文件检查")
+                except yaml.YAMLError as e:
+                    failure.append(f"{file_path} - YAML格式错误: {e}")
+                    failure.append("  修复建议: 检查YAML格式是否正确，确保缩进和语法正确")
+                    valid = False
+                except Exception as e:
+                    failure.append(f"{file_path} - 检查失败: {e}")
+                    failure.append("  修复建议: 检查文件是否存在，权限是否正确")
+                    valid = False
+    
+    return valid, success, failure
+
+def extract_functions(python_file):
+    """从Python文件中提取所有函数名"""
+    import ast
+    functions = []
+    
+    try:
+        with open(python_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 解析Python代码
+        tree = ast.parse(content)
+        
+        # 遍历AST节点，找到所有函数定义
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                functions.append(node.name)
+    except Exception as e:
+        print(f"提取函数时出错: {python_file} - {e}")
+    
+    return functions
 
