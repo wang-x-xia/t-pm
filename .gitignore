@@ -3,3 +3,6 @@ __pycache__/
 
 # 因为用了符号链接，去掉.trae/skills
 .trae/skills
+
+# IDE 配置
+.idea/
