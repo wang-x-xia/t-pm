@@ -3,3 +3,8 @@
 定义:
   文件: src/module.py
   函数: check_module_data
+流程:
+- 遍历模块目录下的所有YAML文件
+- 检查模块YAML的必要字段
+- 验证方法列表和依赖格式
+- 返回检查结果

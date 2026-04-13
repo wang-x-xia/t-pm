@@ -1,6 +1,10 @@
 # 方法管理模块
 import os
+import logging
 import yaml
+from src.paths import get_requirement_dir, get_method_dir
+
+logger = logging.getLogger(__name__)
 
 def list_pending_methods():
     """罗列所有待处理方法及其关联的流程"""
@@ -8,7 +12,7 @@ def list_pending_methods():
     method_names = set()
     
     # 扫描所有需求目录，查找待处理方法相关的用户故事
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     
     for root, _, files in os.walk(requirement_dir):
         for file in files:
@@ -63,7 +67,7 @@ def list_pending_methods():
 def create_method(name, description, process):
     """创建新的方法"""
     # 方法文件存储在模块的方法目录中
-    method_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块/方法管理/方法"
+    method_dir = get_method_dir()
     file_name = f"{name}.yaml"
     file_path = os.path.join(method_dir, file_name)
     
@@ -91,7 +95,7 @@ def create_method(name, description, process):
 
 def edit_method(name, updates):
     """编辑现有方法"""
-    method_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块/方法管理/方法"
+    method_dir = get_method_dir()
     file_name = f"{name}.yaml"
     file_path = os.path.join(method_dir, file_name)
     
@@ -119,7 +123,7 @@ def edit_method(name, updates):
 
 def apply_method(method_name, target_context):
     """应用方法到特定上下文"""
-    method_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块/方法管理/方法"
+    method_dir = get_method_dir()
     file_name = f"{method_name}.yaml"
     file_path = os.path.join(method_dir, file_name)
     
@@ -154,7 +158,7 @@ def apply_method(method_name, target_context):
 
 def list_methods():
     """列出所有方法"""
-    method_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块/方法管理/方法"
+    method_dir = get_method_dir()
     methods = []
     
     if not os.path.exists(method_dir):
@@ -185,7 +189,7 @@ def list_methods():
 
 def check_method_data():
     """检查方法管理数据的合理性"""
-    method_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块/方法管理/方法"
+    method_dir = get_method_dir()
     valid = True
     success = []
     failure = []

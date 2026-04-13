@@ -3,3 +3,8 @@
 定义:
   文件: src/module.py
   函数: check_module_files
+流程:
+- 遍历所有模块的模块YAML
+- 检查代码字段指向的Python文件是否存在
+- 创建缺失的Python文件
+- 建立模块映射关系

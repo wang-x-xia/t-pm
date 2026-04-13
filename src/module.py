@@ -2,10 +2,14 @@
 import os
 import yaml
 import re
+import logging
+from src.paths import get_module_dir, get_project_root
+
+logger = logging.getLogger(__name__)
 
 def check_module_data():
     """检查模块与外部模块管理数据的合理性"""
-    module_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块"
+    module_dir = get_module_dir()
     valid = True
     success = []
     failure = []
@@ -29,12 +33,17 @@ def check_module_data():
                             failure.append(f"{file_path} - 缺少必要字段: 代码")
                             failure.append("  修复建议: 添加 '代码' 字段，指定模块对应的Python文件路径")
                             valid = False
-                        if '方法' in data and isinstance(data['方法'], list):
-                            for i, method in enumerate(data['方法'], 1):
-                                if '名称' not in method:
-                                    failure.append(f"{file_path} - 方法 {i} 缺少必要字段: 名称")
-                                    failure.append("  修复建议: 为每个方法添加 '名称' 字段")
-                                    valid = False
+                        if '方法' in data:
+                            if not isinstance(data['方法'], list):
+                                failure.append(f"{file_path} - 方法字段应该是列表")
+                                failure.append("  修复建议: 方法字段应该是方法名称的列表")
+                                valid = False
+                            else:
+                                for i, method in enumerate(data['方法'], 1):
+                                    if not isinstance(method, str):
+                                        failure.append(f"{file_path} - 方法 {i} 格式错误，应该是字符串")
+                                        failure.append("  修复建议: 方法列表中每一项应该是方法名称字符串")
+                                        valid = False
                         # 检查依赖字段
                         if '依赖' in data and not isinstance(data['依赖'], list):
                             failure.append(f"{file_path} - 依赖字段格式错误")
@@ -55,8 +64,8 @@ def check_module_data():
 
 def check_module_files():
     """检查模块对应的Python文件是否存在，并创建内部模块映射"""
-    module_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块"
-    project_root = "c:/Users/fly_d/IdeaProjects/t-pm"
+    module_dir = get_module_dir()
+    project_root = get_project_root()
     valid = True
     success = []
     failure = []
@@ -142,7 +151,7 @@ def check_module_files():
 
 def analyze_module_dependencies():
     """分析模块之间的依赖关系"""
-    project_root = "c:/Users/fly_d/IdeaProjects/t-pm"
+    project_root = get_project_root()
     dependencies = {}
     
     # 扫描所有Python文件
@@ -206,8 +215,8 @@ def visualize_module_dependencies():
 
 def check_module_dependencies():
     """检查模块依赖关系的合理性"""
-    project_root = "c:/Users/fly_d/IdeaProjects/t-pm"
-    module_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块"
+    project_root = get_project_root()
+    module_dir = get_module_dir()
     valid = True
     success = []
     failure = []
@@ -228,10 +237,10 @@ def check_module_dependencies():
                         code_path = data['代码']
                         module_deps = data['依赖']
                         
-                        # 检查依赖是否存在
+                        # 检查依赖是否存在（依赖名称是模块名称，对应 模块/{name}/模块.yaml）
                         for dep in module_deps:
-                            dep_path = os.path.join(project_root, dep)
-                            if not os.path.exists(dep_path):
+                            dep_module_yaml = os.path.join(module_dir, dep, '模块.yaml')
+                            if not os.path.exists(dep_module_yaml):
                                 failure.append(f"{file_path} - 依赖模块不存在: {dep}")
                                 failure.append(f"  修复建议: 确保依赖模块 {dep} 存在")
                                 valid = False
@@ -245,8 +254,8 @@ def check_module_dependencies():
 
 def check_method_files():
     """检查所有模块中定义的方法是否都有对应的方法文件"""
-    module_dir = "c:/Users/fly_d/IdeaProjects/t-pm/模块"
-    project_root = "c:/Users/fly_d/IdeaProjects/t-pm"
+    module_dir = get_module_dir()
+    project_root = get_project_root()
     valid = True
     success = []
     failure = []

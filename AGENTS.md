@@ -6,7 +6,9 @@
 
 代码的部分，使用了python，并且使用uv来管理python环境。
 使用uv add来添加python依赖，禁止使用pip。
-使用uv run main.py来运行项目。
+使用uv run --env-file .env main.py来运行项目。
+.env文件中配置了PYTHONIOENCODING=utf-8，确保中文输出正常。
+运行测试使用uv run --env-file .env pytest。
 每个模块是一个独立的python文件，每个方法是一个独立的函数。
 命令行模块使用main.py，其他模块使用src/{模块英文名}.py。
 所有的python文件，修改的时候都需要参考对应的模块的设计。

@@ -1,0 +1,11 @@
+参数: []
+名称: 从Python文件中提取所有函数名
+定义:
+  函数: extract_functions
+  文件: src/module.py
+说明: 从Python文件中提取所有函数名
+流程:
+- 读取指定Python文件内容
+- 使用AST解析代码
+- 提取所有函数定义
+- 返回函数名列表

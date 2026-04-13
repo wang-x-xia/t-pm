@@ -1,10 +1,14 @@
 # 背景管理模块
 import os
+import logging
 import yaml
+from src.paths import get_background_dir
+
+logger = logging.getLogger(__name__)
 
 def check_background_data():
     """检查背景管理数据的合理性"""
-    background_dir = "c:/Users/fly_d/IdeaProjects/t-pm/背景"
+    background_dir = get_background_dir()
     valid = True
     success = []
     failure = []
@@ -23,12 +27,24 @@ def check_background_data():
                 with open(background_file, 'r', encoding='utf-8') as f:
                     data = yaml.safe_load(f)
                 
-                # 检查必要字段
-                if '名称' not in data:
-                    failure.append(f"{background_file} - 缺少必要字段: 名称")
-                    valid = False
+                file_valid = True
                 
-                success.append(f"{background_file} - 检查通过")
+                # 检查必要字段
+                for field in ['名称', '说明']:
+                    if field not in data:
+                        failure.append(f"{background_file} - 缺少必要字段: {field}")
+                        valid = False
+                        file_valid = False
+                
+                # 检查名称与文件名一致
+                expected_name = file_name.replace('.yaml', '')
+                if data.get('名称') != expected_name:
+                    failure.append(f"{background_file} - 名称 '{data.get('名称')}' 与文件名 '{expected_name}' 不一致")
+                    valid = False
+                    file_valid = False
+                
+                if file_valid:
+                    success.append(f"{background_file} - 检查通过")
             except Exception as e:
                 failure.append(f"{background_file} - 检查失败: {e}")
                 valid = False
@@ -37,7 +53,7 @@ def check_background_data():
 
 def create_background(name, description):
     """创建新的背景信息"""
-    background_dir = "c:/Users/fly_d/IdeaProjects/t-pm/背景"
+    background_dir = get_background_dir()
     background_file = os.path.join(background_dir, f"{name}.yaml")
     
     # 检查背景是否已存在
@@ -63,7 +79,7 @@ def create_background(name, description):
 
 def edit_background(name, updates):
     """编辑现有背景信息"""
-    background_dir = "c:/Users/fly_d/IdeaProjects/t-pm/背景"
+    background_dir = get_background_dir()
     background_file = os.path.join(background_dir, f"{name}.yaml")
     
     # 检查文件是否存在
@@ -90,7 +106,7 @@ def edit_background(name, updates):
 
 def display_background(name):
     """展示背景信息"""
-    background_dir = "c:/Users/fly_d/IdeaProjects/t-pm/背景"
+    background_dir = get_background_dir()
     background_file = os.path.join(background_dir, f"{name}.yaml")
     
     # 检查文件是否存在
@@ -123,7 +139,7 @@ def display_background(name):
 
 def list_backgrounds():
     """列出所有背景信息"""
-    background_dir = "c:/Users/fly_d/IdeaProjects/t-pm/背景"
+    background_dir = get_background_dir()
     backgrounds = []
     
     # 检查目录是否存在

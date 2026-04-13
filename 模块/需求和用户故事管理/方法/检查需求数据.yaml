@@ -3,3 +3,8 @@
 定义:
   文件: src/requirement.py
   函数: check_requirement_data
+流程:
+- 获取需求目录路径
+- 遍历所有需求YAML文件
+- 检查必要字段
+- 返回检查结果

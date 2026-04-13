@@ -1,10 +1,14 @@
 # 需求和用户故事管理模块
 import os
+import logging
 import yaml
+from src.paths import get_requirement_dir
+
+logger = logging.getLogger(__name__)
 
 def check_requirement_data():
     """检查需求与用户故事管理数据的合理性"""
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     valid = True
     success = []
     failure = []
@@ -47,7 +51,7 @@ def check_requirement_data():
 
 def create_requirement(name, description):
     """创建新的需求"""
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     # 创建需求目录
     req_dir = os.path.join(requirement_dir, name)
     if not os.path.exists(req_dir):
@@ -80,7 +84,7 @@ def create_requirement(name, description):
 
 def create_user_story(requirement_name, story_name, description, process):
     """为需求创建新的用户故事"""
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     req_dir = os.path.join(requirement_dir, requirement_name)
     
     # 检查需求是否存在
@@ -137,7 +141,7 @@ def create_user_story(requirement_name, story_name, description, process):
 
 def list_requirements_with_stories():
     """列出所有需求及其关联的用户故事"""
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     requirements = []
     
     if not os.path.exists(requirement_dir):
@@ -198,7 +202,7 @@ def list_requirements_with_stories():
 
 def list_user_stories():
     """列出所有用户故事及其关联的需求"""
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     user_stories = []
     
     if not os.path.exists(requirement_dir):
@@ -239,7 +243,7 @@ def list_user_stories():
 
 def check_requirement_story_relation():
     """检查需求和用户故事的关联关系"""
-    requirement_dir = "c:/Users/fly_d/IdeaProjects/t-pm/需求"
+    requirement_dir = get_requirement_dir()
     valid = True
     success = []
     failure = []
